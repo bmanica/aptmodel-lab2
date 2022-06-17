@@ -16,9 +16,9 @@ import pandas as pd
 import numpy as np
 import datetime
 
-# ============================ APT model check functions (all orders) ===================================== #
+# =================================== APT model check functions ========================================== #
 
-### Function definition
+### Function definition for all orders
 def apt_check_all(ob_data):
 
     # -- General lambda functions definition -- #
@@ -95,3 +95,6 @@ def apt_check_all(ob_data):
     # -- Return definition -- #
     r_data = {'simple_mid_price': simple_mid, 'weighted_mid_price': weighted_mid}
     return r_data
+
+### Function definition for top of the book orders
+def apt_check_top(ob_data):
