@@ -98,3 +98,20 @@ def apt_check_all(ob_data):
 
 ### Function definition for top of the book orders
 def apt_check_top(ob_data):
+
+    # -- General lambda functions definition -- #
+    calc_inbalace = lambda b, a, d: np.sum(b[:d]) / np.sum(np.add(b[:d], a[:d]))
+    w_mid = lambda b,bv,a,av,d: (bv[:d]/np.add(bv[:d],av[:d]))*a[:d]+(av[:d]/np.add(bv[:d],av[:d]))*b[:d]
+
+    # -- Data frame of analysis definition
+    price_df = pd.DataFrame.from_dict({i: [(ob_data[i].iloc[0, :]['ask'] + ob_data[i].iloc[0, :]['bid']) * 0.5,
+
+                                            round((calc_inbalace(ob_data[i]['bid_size'], ob_data[i]['ask_size'],
+                                                   len(ob_data[i]))) * np.array(price_df[0])[0], 2),
+
+                                            round(w_mid(ob_data[i]['bid'], ob_data[i]['bid_size'],
+                                                   ob_data[i]['ask'], ob_data[i]['ask_size'],1)[0], 2)]
+
+                                            for i in ob_data}).T
+
+    price_df
