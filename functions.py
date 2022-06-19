@@ -102,16 +102,25 @@ def apt_check_top(ob_data):
     # -- General lambda functions definition -- #
     calc_inbalace = lambda b, a, d: np.sum(b[:d]) / np.sum(np.add(b[:d], a[:d]))
     w_mid = lambda b,bv,a,av,d: (bv[:d]/np.add(bv[:d],av[:d]))*a[:d]+(av[:d]/np.add(bv[:d],av[:d]))*b[:d]
+    apt_check = lambda df: sum(df['Simple Mid-Price'].shift()==df['Simple Mid-Price'])
 
-    # -- Data frame of analysis definition
-    price_df = pd.DataFrame.from_dict({i: [(ob_data[i].iloc[0, :]['ask'] + ob_data[i].iloc[0, :]['bid']) * 0.5,
+# =================================== APT model check functions ========================================== #
 
-                                            round((calc_inbalace(ob_data[i]['bid_size'], ob_data[i]['ask_size'],
-                                                   len(ob_data[i]))) * np.array(price_df[0])[0], 2),
+    # -- Data frame of analysis definition -- #
+    price_df = pd.DataFrame.from_dict({i: [(ob_data[i].iloc[0,:]['ask'] + ob_data[i].iloc[0,:]['bid'])*0.5,
+
+                                            round((calc_inbalace(ob_data[i]['bid_size'],
+                                                                 ob_data[i]['ask_size'],
+                                                                 len(ob_data[i])))*np.array(price_df[0])[0], 2),
 
                                             round(w_mid(ob_data[i]['bid'], ob_data[i]['bid_size'],
                                                    ob_data[i]['ask'], ob_data[i]['ask_size'],1)[0], 2)]
 
                                             for i in ob_data}).T
 
-    price_df
+    price_df.index = pd.to_datetime(pd.Series(price_df.index.values))
+    price_df.columns = ['Simple Mid-Price', 'Weighted Mid-Price A', 'Weighted Mid-Price B']
+
+    # -- Grouping by 1 minute frequency -- #
+    # First list defined for
+    apt_mid = price_df.groupby(pd.Grouper('1min')).apply(apt_check).tolist()
