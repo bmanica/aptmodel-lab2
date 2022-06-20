@@ -18,8 +18,40 @@ import plotly.graph_objects as go
 # ============================== Stacked bar chart for APT model test ===================================== #
 
 ### Function definition
-def plot_stacked_bar(exp_df,
-                     minutes=None):
+def plot_stacked_bar(exp_df:pd.DataFrame,
+                     minutes:int=None):
+
+    """
+    Stacked bar plot generator for the experiments proposed in APT model testing
+
+    Parameters
+    ----------
+
+    exp_df: DataFrame (default:None) --> Required parameter
+        Principal input data, correspond to a data frame where Exp. 1 and Exp. 2 where developed, it has to follow the
+        next structure:
+
+        'Time': Datetime data frame index consolidated by minute
+        'Exp 1': Number of occurrences where mid-price(t) == mid-price(t+1)
+        'Exp 2': Number of occurrences where mid-price(t) != mid-price(t+1)
+        'P. Exp 1': Proportion of observations that satisfies the first experiment
+        'P. Exp 2': Proportion of observations that satisfies the second experiment
+
+    minutes: Integer (default:None) --> Optional parameter
+        Number of minutes that the user want to see in the chart (it has to follow the time frame structure of data)
+
+    Returns
+    -------
+
+    fig: Figure
+        Plotly figure containing a stacked bar chart with the proportion of the developed experiments in APT model
+        testing
+
+    References
+    ----------
+
+    [1] https://plotly.com/python/horizontal-bar-charts/
+    """
 
     # -- Define the minutes structure -- #
     if minutes is None:

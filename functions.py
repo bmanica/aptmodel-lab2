@@ -19,7 +19,40 @@ import datetime
 # =================================== APT model check functions =========================================== #
 
 ### Function definition for all orders
-def apt_check_all(ob_data):
+def apt_check_all(ob_data:dict) -> dict:
+
+    """
+    Test APT model function (for all orders contained on each orderbook)
+
+    Parameters
+    ----------
+
+    ob_data:dict (default:None) --> Required parameter
+        Input data from orderbook, it has to be a dict of data frames with the following structure:
+
+        'timestamp': Principal key, correspond to the timestamp associated to each orderbook
+        'bid_size': First column on each data frame, correspond to the bid volume associated to each bid price order
+        'bid': Second column of the data frame, correspond to the highest price a buyer is willing to buy
+        'ask': Third column of the data frame, correspond to the lowest price a seller is willing to sell
+        'ask_size': Fourth column of the data frame, correspond to the ask volume associated to each ask price order
+
+    Returns
+    -------
+
+    r_data: dict
+        Return data, it's a dict of data frames where each one of them contains the result of the proposing experiments
+        the dict of return follows the next structure:
+
+        'simple_mid_price': First key, contains all the experiments developed for APT model testing with simple
+                            mid-price
+        'weighted_mid_price': Second key, contains all the experiments developed for APT model testing with weighted
+                              mid-price
+
+    References
+    ----------
+
+    [1] https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.groupby.html
+    """
 
     # -- General lambda functions definition -- #
     data_adder = lambda each_list, values: each_list.append(values)
@@ -99,7 +132,42 @@ def apt_check_all(ob_data):
     return r_data
 
 ### Function definition for top of the book orders
-def apt_check_top(ob_data):
+def apt_check_tob(ob_data:dict) -> dict:
+
+    """
+    Test APT model function (just for top of the book orders contained on each orderbook)
+
+    Parameters
+    ----------
+
+    ob_data:dict (default:None) --> Required parameter
+        Input data from orderbook, it has to be a dict of data frames with the following structure:
+
+        'timestamp': Principal key, correspond to the timestamp associated to each orderbook
+        'bid_size': First column on each data frame, correspond to the bid volume associated to each bid price order
+        'bid': Second column of the data frame, correspond to the highest price a buyer is willing to buy
+        'ask': Third column of the data frame, correspond to the lowest price a seller is willing to sell
+        'ask_size': Fourth column of the data frame, correspond to the ask volume associated to each ask price order
+
+    Returns
+    -------
+
+    r_data: dict
+        Return data, it's a dict of data frames where each one of them contains the result of the proposing experiments
+        the dict of return follows the next structure:
+
+        'simple_mid_price': First key, contains all the experiments developed for APT model testing with simple
+                            mid-price
+        'weighted_mid_price_a': Second key, contains all the experiments developed for APT model testing with weighted
+                                mid-price (the first way of calculation).
+        'weighted_mid_price_b': Second key, contains all the experiments developed for APT model testing with weighted
+                                mid-price (the second way of calculation)
+
+    References
+    ----------
+
+    [1] https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.groupby.html
+    """
 
     # -- General lambda functions definition -- #
     calc_inbalace = lambda b, a, d: np.sum(b[:d]) / np.sum(np.add(b[:d], a[:d]))
