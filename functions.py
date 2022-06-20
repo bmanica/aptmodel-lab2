@@ -1,7 +1,7 @@
 
 """
 # -- --------------------------------------------------------------------------------------------------- -- #
-# -- project: Asset Pricing Theory empirical definition                                                  -- #
+# -- project: Asset Pricing Theory and Roll model empirical definition                                   -- #
 # -- functions.py : It's a python script with principal model calculation                                -- #
 # -- author: @bmanica                                                                                    -- #
 # -- license: GNU General Public License v3.0                                                            -- #
@@ -107,8 +107,6 @@ def apt_check_top(ob_data):
     apt_check = lambda df: sum(df['Simple Mid-Price'].shift() == df['Simple Mid-Price'])
     apt_check_a = lambda df: sum(df['Weighted Mid-Price A'].shift() == df['Weighted Mid-Price A'])
     apt_check_b = lambda df: sum(df['Weighted Mid-Price B'].shift() == df['Weighted Mid-Price B'])
-
-# =================================== APT model check functions ========================================== #
 
     # -- Data frame of analysis definition -- #
     price_df = pd.DataFrame.from_dict({i: [(ob_data[i].iloc[0,:]['ask'] + ob_data[i].iloc[0,:]['bid'])*0.5,
