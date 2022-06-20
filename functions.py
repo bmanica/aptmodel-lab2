@@ -35,9 +35,9 @@ def apt_check_all(ob_data):
     for i in ob_data:
 
         sub_data = ob_data[i]
-        sub_data['mid_price'] = (sub_data['bid'] + sub_data['ask'])*0.5 # Simple mid price
+        sub_data['mid_price'] = (sub_data['bid'] + sub_data['ask'])*0.5 # Simple mid-price
         sub_data['weighted_mid'] = round(w_mid(sub_data['bid'], sub_data['bid_size'],
-                                               sub_data['ask'], sub_data['ask_size'], 1), 2) # Weighted mid
+                                               sub_data['ask'], sub_data['ask_size'], 1), 2)
 
         new_i = pd.to_datetime(i) # Datetime type index
         sub_data.index = [datetime.datetime(new_i.year, new_i.month,
@@ -60,10 +60,10 @@ def apt_check_all(ob_data):
         data_adder(total_list, total)
 
         # Experiment 1 definition for each mid-price type
-        e1_mid = sum([price_data[i]['mid_price'] == price_data[i+1['mid_price']]
+        e1_mid = sum([price_data['mid_price'][i] == price_data['mid_price'][i+1]
                       for i in range(len(price_data)-1)])
 
-        e1_wmid = sum([price_data[i]['weighted_mid'] == price_data[i+1['weighted_mid']]
+        e1_wmid = sum([price_data['weighted_mid'][i] == price_data['weighted_mid'][i+1]
                        for i in range(len(price_data)-1)])
 
         data_adder(exp1_list, [e1_mid, e1_wmid])
@@ -102,16 +102,16 @@ def apt_check_top(ob_data):
     # -- General lambda functions definition -- #
     calc_inbalace = lambda b, a, d: np.sum(b[:d]) / np.sum(np.add(b[:d], a[:d]))
     w_mid = lambda b,bv,a,av,d: (bv[:d]/np.add(bv[:d],av[:d]))*a[:d]+(av[:d]/np.add(bv[:d],av[:d]))*b[:d]
-    apt_check = lambda df: sum(df['Simple Mid-Price'].shift()==df['Simple Mid-Price'])
+    apt_check = lambda df: sum(df['Simple Mid-Price'].shift() == df['Simple Mid-Price'])
 
 # =================================== APT model check functions ========================================== #
 
     # -- Data frame of analysis definition -- #
     price_df = pd.DataFrame.from_dict({i: [(ob_data[i].iloc[0,:]['ask'] + ob_data[i].iloc[0,:]['bid'])*0.5,
 
-                                            round((calc_inbalace(ob_data[i]['bid_size'],
-                                                                 ob_data[i]['ask_size'],
-                                                                 len(ob_data[i])))*np.array(price_df[0])[0], 2),
+                                       round((calc_inbalace(ob_data[i]['bid_size'],
+                                                            ob_data[i]['ask_size'],
+                       len(ob_data[i])))*[(ob_data[i].iloc[0,:]['ask']+ob_data[i].iloc[0,:]['bid'])]*0.5,2),
 
                                             round(w_mid(ob_data[i]['bid'], ob_data[i]['bid_size'],
                                                    ob_data[i]['ask'], ob_data[i]['ask_size'],1)[0], 2)]
@@ -124,3 +124,5 @@ def apt_check_top(ob_data):
     # -- Grouping by 1 minute frequency -- #
     # First list defined for
     apt_mid = price_df.groupby(pd.Grouper('1min')).apply(apt_check).tolist()
+
+    return apt_mid
