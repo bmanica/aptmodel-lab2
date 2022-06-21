@@ -243,7 +243,11 @@ def apt_check_tob(ob_data:dict) -> dict:
 # =================================== Roll model check function =========================================== #
 
 ### Function definition for Roll model validation
-def roll_model_check(ob_data:dict) -> dict:
+def roll_model_check(ob_data:dict,
+                     pt_data:pd.DataFrame) -> dict:
+
+    # -- Generalized lambda functions -- #
+    prob_evo = lambda series,end,counter: round(list(series[0:end]).count(counter) / len(series[0:end]), 4)
 
     # -- Data frame definition -- #
     roll_df = pd.DataFrame.from_dict({i: (ob_data[i]['bid_size'].iloc[0], ob_data[i]['bid'].iloc[0],
@@ -273,7 +277,16 @@ def roll_model_check(ob_data:dict) -> dict:
     roll_df['theoretical_bid'] = roll_df['mid_price'] - ob_teo_spread
     roll_df['theoretical_ask'] = roll_df['mid_price'] + ob_teo_spread
 
+    # -- Data frame definition for probability of buy or sell -- #
+    sell_evo = [prob_evo(pt_data.side, i, "sell") for i in range(1,50001)] # 50000 scenarios
+    buy_evo = list((1-np.array(sell_evo)))
+
+    pt_data_sample = pt_data[0:50000]
+    pt_data_sample['prob_sell'] = sell_evo
+    pt_data_sample['prob_buy'] = buy_evo
+    pt_data_sample['timestamp'] = pd.to_datetime(pt_data_sample['timestamp'])
+
     # -- Return data -- #
-    r_data = {'spread_definition': roll_df}
+    r_data = {'spread_definition': roll_df, 'prob_evolution': pt_data_sample}
 
     return r_data
