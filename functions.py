@@ -243,7 +243,7 @@ def apt_check_tob(ob_data:dict) -> dict:
 # =================================== Roll model check function =========================================== #
 
 ### Function definition for Roll model validation
-def roll_model_check(ob_data:dict):
+def roll_model_check(ob_data:dict) -> dict:
 
     # -- Data frame definition -- #
     roll_df = pd.DataFrame.from_dict({i: (ob_data[i]['bid_size'].iloc[0], ob_data[i]['bid'].iloc[0],
@@ -277,7 +277,3 @@ def roll_model_check(ob_data:dict):
     r_data = {'spread_definition': roll_df}
 
     return r_data
-
-
-
-

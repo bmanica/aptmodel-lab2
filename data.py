@@ -35,3 +35,7 @@ ob_data_bit = {orderbook: pd.DataFrame(ob_data_bit[orderbook])[['bid_size', 'bid
 
 ob_data_kra = {orderbook: pd.DataFrame(ob_data_kra[orderbook])[['bid_size', 'bid', 'ask', 'ask_size']]
                for orderbook in list(ob_data_kra.keys())}
+
+### Now let's extract the Public Trades data
+pt_data = pd.read_csv('files/btcusdt_binance.csv')
+pt_data.drop(['Unnamed: 0'], axis=1, inplace=True)
