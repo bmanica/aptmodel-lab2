@@ -1,10 +1,10 @@
 
 # -- --------------------------------------------------------------------------------------------------- -- #
-# -- project: A SHORT DESCRIPTION OF THE PROJECT                                                         -- #
-# -- script: requirements.txt : text file with the required libraries for the project                    -- #
-# -- author: YOUR GITHUB USER NAME                                                                       -- #
-# -- license: GPL-3.0 License                                                                            -- #
-# -- repository: YOUR REPOSITORY URL                                                                     -- #
+# -- project: Asset Pricing Theory and Roll model empirical definition                                   -- #
+# -- requirements.txt : Text file with the required libraries for the project                            -- #
+# -- author: @bmanica                                                                                    -- #
+# -- license: GNU General Public License v3.0                                                            -- #
+# -- repository: https://github.com/bmanica/aptmodel-lab2.git                                            -- #
 # -- --------------------------------------------------------------------------------------------------- -- #
 
 pandas>=1.1.0
@@ -12,3 +12,4 @@ numpy>=1.19.1
 jupyter>=1.0.0
 chart_studio>=1.1
 plotly>=4.14
+statsmodels>=0.13.2

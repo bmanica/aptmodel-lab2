@@ -15,6 +15,7 @@
 import pandas as pd
 import numpy as np
 import datetime
+from statsmodels.tsa.stattools import acovf
 
 # =================================== APT model check functions =========================================== #
 
@@ -238,3 +239,45 @@ def apt_check_tob(ob_data:dict) -> dict:
               'weighted_mid_price_b': weighted_mid_b}
 
     return r_data
+
+# =================================== Roll model check function =========================================== #
+
+### Function definition for Roll model validation
+def roll_model_check(ob_data:dict):
+
+    # -- Data frame definition -- #
+    roll_df = pd.DataFrame.from_dict({i: (ob_data[i]['bid_size'].iloc[0], ob_data[i]['bid'].iloc[0],
+                                          ob_data[i]['ask'].iloc[0], ob_data[i]['ask_size'].iloc[0],
+                                          (ob_data[i].iloc[0]['bid'] + ob_data[i].iloc[0]['ask'])*0.5)
+                                      for i in ob_data}).T
+
+    roll_df.index = pd.to_datetime(roll_df.index.values)
+    roll_df.index.name = 'Time'
+    roll_df.columns = ['bid_size', 'bid', 'ask', 'ask_size', 'mid_price']
+
+    # -- Differences between prices -- #
+    diff_prices = [roll_df['mid_price'][i+1] - roll_df['mid_price'][i] for i in range(len(roll_df)-1)]
+
+    # -- Theoretical spread calculation -- #
+    # Model spread definition --> Spread = 2*C: C = sqrt(-gamma_1): gamma_1 = Cov(delta(p_t-1)*delta(p_t))
+    # First let's define a generalized spread for all orderbook data
+    ob_teo_spread = round(np.sqrt(np.abs(acovf(np.array(diff_prices), adjusted=True, nlag=1)[1]))*2, 6)
+
+    # Now let's describe the evolution of that theoretical spread
+    teo_spread = [np.sqrt(np.abs(acovf(np.array(diff_prices[0:i]), adjusted=True, nlag=1)[1]))*2
+                  for i in range(2, len(diff_prices)+1)]
+
+    # -- Data frame consolidation for theoretical and real spread -- #
+    roll_df['real_spread'] = roll_df['ask'] - roll_df['bid']
+    roll_df['theoretical_spread'] = [0.0, 0.0] + teo_spread # Add zeros because of time lags
+    roll_df['theoretical_bid'] = roll_df['mid_price'] - ob_teo_spread
+    roll_df['theoretical_ask'] = roll_df['mid_price'] + ob_teo_spread
+
+    # -- Return data -- #
+    r_data = {'spread_definition': roll_df}
+
+    return r_data
+
+
+
+
