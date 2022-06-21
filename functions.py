@@ -15,7 +15,7 @@
 import pandas as pd
 import numpy as np
 import datetime
-from statsmodels.tsa.stattools import acovf
+from statsmodels.tsa.stattools import acovf, acf
 
 # =================================== APT model check functions =========================================== #
 
@@ -286,7 +286,15 @@ def roll_model_check(ob_data:dict,
     pt_data_sample['prob_buy'] = buy_evo
     pt_data_sample['timestamp'] = pd.to_datetime(pt_data_sample['timestamp'])
 
+    # -- Auto correlation and final probability within the whole time series
+    pt_data['direction'] = [-1 if i=="sell" else 1 for i in pt_data.side]
+    auto_corr = acf(np.array(pt_data['direction']), nlags=1)[1]
+    total_sell_prob = prob_evo(pt_data.side, len(pt_data), "sell")
+    total_buy_prob = prob_evo(pt_data.side, len(pt_data), "buy")
+
     # -- Return data -- #
-    r_data = {'spread_definition': roll_df, 'prob_evolution': pt_data_sample}
+    r_data = {'spread_definition': roll_df, 'prob_evolution': pt_data_sample,
+              'auto_correlation': auto_corr, 'total_sell_prob': total_sell_prob,
+              'total_buy_prob': total_buy_prob}
 
     return r_data
