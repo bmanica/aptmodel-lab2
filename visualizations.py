@@ -174,7 +174,7 @@ def plot_teo_spread(spread_data:pd.DataFrame):
     ])
 
     # Plot configuration
-    fig_bid.update_layout(height=500, font_family='Oswald, sans-serif',
+    fig_bid.update_layout(height=600, font_family='Oswald, sans-serif',
                              title_text='<b>Theoretical vs Real Bid<b>')
     fig_bid['layout']['title']['font'] = dict(size=19)
     fig_bid.update_yaxes(title_text='Bid')
@@ -192,7 +192,7 @@ def plot_teo_spread(spread_data:pd.DataFrame):
     ])
 
     # Plot configuration
-    fig_ask.update_layout(height=500, font_family='Oswald, sans-serif',
+    fig_ask.update_layout(height=600, font_family='Oswald, sans-serif',
                           title_text='<b>Theoretical vs Real Ask<b>')
     fig_ask['layout']['title']['font'] = dict(size=19)
     fig_ask.update_yaxes(title_text='Ask')
@@ -248,7 +248,7 @@ def plot_prob_evo(pt_data:pd.DataFrame):
                    mode='lines', marker={'color': '#434BC7'}),
 
         go.Scatter(name='Convergence', x=pt_data['timestamp'], y=[50]*len(pt_data),
-                   mode='lines+markers', marker={'color': '#000000'})
+                   mode='lines', marker={'color': '#000000'})
     ])
 
     # Plot configuration

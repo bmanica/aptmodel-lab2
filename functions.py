@@ -326,10 +326,10 @@ def roll_model_check(ob_data:dict,
     roll_df['theoretical_ask'] = roll_df['mid_price'] + ob_teo_spread
 
     # -- Data frame definition for probability of buy or sell -- #
-    sell_evo = [prob_evo(pt_data.side, i, "sell") for i in range(1,50001)] # 50000 scenarios
+    sell_evo = [prob_evo(pt_data.side, i, "sell") for i in range(1,10001)] # 10000 scenarios
     buy_evo = list((1-np.array(sell_evo)))
 
-    pt_data_sample = pt_data[0:50000]
+    pt_data_sample = pt_data[0:10000]
     pt_data_sample['prob_sell'] = sell_evo
     pt_data_sample['prob_buy'] = buy_evo
     pt_data_sample['timestamp'] = pd.to_datetime(pt_data_sample['timestamp'])
