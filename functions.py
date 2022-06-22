@@ -246,6 +246,54 @@ def apt_check_tob(ob_data:dict) -> dict:
 def roll_model_check(ob_data:dict,
                      pt_data:pd.DataFrame) -> dict:
 
+    """
+    Test Roll model function. It calculates theoretical spread in order to make a clear comparison between that
+    value and the observed in real data, It also calculates the probability evolution in sell and buy orders to
+    check the assumption of independence between order type
+
+    Parameters
+    ----------
+
+    ob_data:dict (default:None) --> Required parameter
+        Input data from orderbook, it has to be a dict of data frames with the following structure:
+
+        'timestamp': Principal key, correspond to the timestamp associated to each orderbook
+        'bid_size': First column on each data frame, correspond to the bid volume associated to each bid price order
+        'bid': Second column of the data frame, correspond to the highest price a buyer is willing to buy
+        'ask': Third column of the data frame, correspond to the lowest price a seller is willing to sell
+        'ask_size': Fourth column of the data frame, correspond to the ask volume associated to each ask price order
+
+    pt_data:pd.DataFrame (default:None) --> Required parameter
+        Public trades data frame, it has to follow the next structure:
+
+        'timestamp': First column, correspond to the timestamp associated to each registered trade
+        'price': USD price at which the transaction was made
+        'amount': Traded volume at a specific price and timestamp
+        'side': Traded order direction (sell or buy)
+
+    Returns
+    -------
+
+    r_data: dict
+        Return data, it's a dict of different data type with the following structure:
+
+        'spread_definition': Data frame with the calculations of theoretical spread, bid and ask
+
+        'prob_evolution': Data frame with the probability evolution on sell and buy orders. Just a
+                          sample of 50,000 because time complexity computation
+
+        'auto_correlation': Auto correlation between orders (buy and sell)
+
+        'total_sell_prob': Frequency probability of total orders of sell
+
+        'total_buy_prob': Frequency probability of total orders of buy
+
+    References
+    ----------
+
+    [1] https://www.statsmodels.org/dev/_modules/statsmodels/tsa/stattools.html
+    """
+
     # -- Generalized lambda functions -- #
     prob_evo = lambda series,end,counter: round(list(series[0:end]).count(counter) / len(series[0:end]), 4)
 
