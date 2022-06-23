@@ -175,15 +175,15 @@ def plot_teo_spread(spread_data:pd.DataFrame):
     fig_spread.update_xaxes(title_text='Time')
 
     # -- Figure and plot definition for theoretical spreads differences -- #
-
+    set_color = lambda x: '#C22911' if x<0 else '#15569B'
     fig_diff = go.Figure(data=[
 
-        go.Bar(name='Diff Spreads', x=spread_data.index.values, y=spread_data['spread_diff'],
-               marker=np.where(spread_data['spread_diff']<0, '#C22911', '#15569B'))
+        go.Bar(name='Diff Spreads', x=spread_data.index.values, y=spread_data['spread_diff'][0:20],
+               marker=dict(color=list(map(set_color, list(spread_data['spread_diff'][0:20])))))
     ])
 
     # Plot configuration
-    fig_diff.update_layout(barmode='stack', height=500,
+    fig_diff.update_layout(barmode='relative', height=500,
                            font_family='Oswald, sans-serif', title_text='<b>Theoretical vs Real Spread Diff<b>')
     fig_diff['layout']['title']['font'] = dict(size=19)
     fig_diff.update_yaxes(title_text='Spreads difference')
