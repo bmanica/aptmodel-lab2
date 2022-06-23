@@ -13,6 +13,7 @@
 
 ### Libraries to use
 import pandas as pd
+import numpy as np
 import plotly.graph_objects as go
 
 # ============================== Stacked bar chart for APT model test ===================================== #
@@ -59,19 +60,19 @@ def plot_stacked_bar(exp_df:pd.DataFrame,
         # Plot definition
         fig = go.Figure(data=[
 
-            go.Bar(name='Exp. 1', x=exp_df['P. Exp 1']*100, y=pd.Series(exp_df.index.values),
-                   marker={'color':'#15569B'}, orientation='h'),
+            go.Bar(name='Exp. 1', x=pd.Series(exp_df.index.values), y=exp_df['Exp 1'],
+                   marker={'color': '#15569B'}),
 
-            go.Bar(name='Exp. 2', x=exp_df['P. Exp 2']*100, y=pd.Series(exp_df.index.values),
-                   marker={'color':'#C22911'}, orientation='h')
+            go.Bar(name='Exp. 2', x=pd.Series(exp_df.index.values), y=exp_df['Exp 2'],
+                   marker={'color': '#C22911'})
         ])
 
         # Plot configurations
-        fig.update_layout(barmode='stack', height=600,
-                          font_family='Oswald, sans-serif', title_text='<b>Experiment proportions for APT<b>')
+        fig.update_layout(barmode='stack', height=500,
+                          font_family='Oswald, sans-serif', title_text='<b>Experiment frequency for APT<b>')
         fig['layout']['title']['font'] = dict(size=19)
-        fig.update_yaxes(title_text='Time')
-        fig.update_xaxes(title_text='Experiments proportion in %')
+        fig.update_yaxes(title_text='Experiments frequency')
+        fig.update_xaxes(title_text='Time')
 
         return fig
 
@@ -83,19 +84,19 @@ def plot_stacked_bar(exp_df:pd.DataFrame,
         # Plot definition
         fig = go.Figure(data=[
 
-            go.Bar(name='Exp. 1', x=plot_data['P. Exp 1']*100, y=pd.Series(plot_data.index.values),
-                   marker={'color': '#15569B'}, orientation='h'),
+            go.Bar(name='Exp. 1', x=pd.Series(plot_data.index.values), y=plot_data['Exp 1'],
+                   marker={'color': '#15569B'}),
 
-            go.Bar(name='Exp. 2', x=plot_data['P. Exp 2']*100, y=pd.Series(plot_data.index.values),
-                   marker={'color': '#C22911'}, orientation='h')
+            go.Bar(name='Exp. 2', x=pd.Series(plot_data.index.values), y=plot_data['Exp 2'],
+                   marker={'color': '#C22911'})
         ])
 
         # Plot configurations
-        fig.update_layout(barmode='stack', height=600,
-                          font_family='Oswald, sans-serif', title_text='<b>Experiment proportions for APT<b>')
+        fig.update_layout(barmode='stack', height=500,
+                          font_family='Oswald, sans-serif', title_text='<b>Experiment frequency for APT<b>')
         fig['layout']['title']['font'] = dict(size=19)
-        fig.update_yaxes(title_text='Time')
-        fig.update_xaxes(title_text='Experiments proportion in %')
+        fig.update_yaxes(title_text='Experiments frequency')
+        fig.update_xaxes(title_text='Time')
 
         return fig
 
@@ -123,6 +124,7 @@ def plot_teo_spread(spread_data:pd.DataFrame):
             'mid_price': Mid-price in USD for each orderbook
             'real_spread': Real observed spread between bid and ask (top of the book)
             'theoretical_spread': Calculated spread with Roll model definition
+            'spread_diff': Difference between real and theoretical spread
             'theoretical_bid': Calculated bid with Roll model definition (Mid-price - Theoretical spread)
             'theoretical_ask': Calculated ask with Roll model definition (Mid-price + Theoretical spread)
 
@@ -132,11 +134,21 @@ def plot_teo_spread(spread_data:pd.DataFrame):
         fig_spread: Figure
             Plotly figure containing a line chart where it's compared theoretical vs real spread
 
+        fig_diff: Figure
+            Plotly figure containing a bar chart where it's compared the difference between theoretical and
+            real spread
+
         fig_bid: Figure
             Plotly figure containing a line chart where it's compared theoretical vs real bid
 
         fig_ask: Figure
             Plotly figure containing a line chart where it's compared theoretical vs real ask
+
+        fig_theo: Figure
+            Plotly figure containing a line chart where it's compared all theoretical metrics
+
+        fig_real: Figure
+            Plotly figure containing a line chart where it's compared all observed metrics
 
         References
         ----------
@@ -162,6 +174,21 @@ def plot_teo_spread(spread_data:pd.DataFrame):
     fig_spread.update_yaxes(title_text='Spread')
     fig_spread.update_xaxes(title_text='Time')
 
+    # -- Figure and plot definition for theoretical spreads differences -- #
+
+    fig_diff = go.Figure(data=[
+
+        go.Bar(name='Diff Spreads', x=spread_data.index.values, y=spread_data['spread_diff'],
+               marker=np.where(spread_data['spread_diff']<0, '#C22911', '#15569B'))
+    ])
+
+    # Plot configuration
+    fig_diff.update_layout(barmode='stack', height=500,
+                           font_family='Oswald, sans-serif', title_text='<b>Theoretical vs Real Spread Diff<b>')
+    fig_diff['layout']['title']['font'] = dict(size=19)
+    fig_diff.update_yaxes(title_text='Spreads difference')
+    fig_diff.update_xaxes(title_text='Time')
+
     # -- Figure and plot definition for theoretical and real bid -- #
 
     fig_bid = go.Figure(data=[
@@ -170,14 +197,17 @@ def plot_teo_spread(spread_data:pd.DataFrame):
                    mode='lines', marker={'color': '#B2B641'}),
 
         go.Scatter(name='Theoretical Bid', x=spread_data.index.values, y=spread_data['theoretical_bid'],
-                   mode='lines', marker={'color': '#4785C2'})
+                   mode='lines', marker={'color': '#4785C2'}),
+
+        go.Scatter(name='Mid-Price', x=spread_data.index.values, y=spread_data['mid_price'],
+                   mode='lines', marker={'color': '#000000'})
     ])
 
     # Plot configuration
-    fig_bid.update_layout(height=600, font_family='Oswald, sans-serif',
-                             title_text='<b>Theoretical vs Real Bid<b>')
+    fig_bid.update_layout(height=500, font_family='Oswald, sans-serif',
+                          title_text='<b>Theoretical vs Real Bid<b>')
     fig_bid['layout']['title']['font'] = dict(size=19)
-    fig_bid.update_yaxes(title_text='Bid')
+    fig_bid.update_yaxes(title_text='Bid price')
     fig_bid.update_xaxes(title_text='Time')
 
     # -- Figure and plot definition for theoretical and real ask -- #
@@ -188,18 +218,64 @@ def plot_teo_spread(spread_data:pd.DataFrame):
                    mode='lines', marker={'color': '#B2B641'}),
 
         go.Scatter(name='Theoretical Ask', x=spread_data.index.values, y=spread_data['theoretical_ask'],
-                   mode='lines', marker={'color': '#4785C2'})
+                   mode='lines', marker={'color': '#4785C2'}),
+
+        go.Scatter(name='Mid-Price', x=spread_data.index.values, y=spread_data['mid_price'],
+                   mode='lines', marker={'color': '#000000'})
     ])
 
     # Plot configuration
-    fig_ask.update_layout(height=600, font_family='Oswald, sans-serif',
+    fig_ask.update_layout(height=500, font_family='Oswald, sans-serif',
                           title_text='<b>Theoretical vs Real Ask<b>')
     fig_ask['layout']['title']['font'] = dict(size=19)
-    fig_ask.update_yaxes(title_text='Ask')
+    fig_ask.update_yaxes(title_text='Ask price')
     fig_ask.update_xaxes(title_text='Time')
 
+    # -- Figure and plot definition for theoretical metrics -- #
+
+    fig_theo = go.Figure(data=[
+
+        go.Scatter(name='Theoretical Bid', x=spread_data.index.values, y=spread_data['theoretical_bid'],
+                   mode='lines', marker={'color': '#B2B641'}),
+
+        go.Scatter(name='Theoretical Ask', x=spread_data.index.values, y=spread_data['theoretical_ask'],
+                   mode='lines', marker={'color': '#4785C2'}),
+
+        go.Scatter(name='Mid-Price', x=spread_data.index.values, y=spread_data['mid_price'],
+                   mode='lines', marker={'color': '#000000'})
+    ])
+
+    # Plot configuration
+    fig_theo.update_layout(height=500, font_family='Oswald, sans-serif',
+                           title_text='<b>Theoretical values with Roll model<b>')
+    fig_theo['layout']['title']['font'] = dict(size=19)
+    fig_theo.update_yaxes(title_text='Theoretical prices')
+    fig_theo.update_xaxes(title_text='Time')
+
+    # -- Figure and plot definition for real metrics -- #
+
+    fig_real = go.Figure(data=[
+
+        go.Scatter(name='Real Bid', x=spread_data.index.values, y=spread_data['bid'],
+                   mode='lines', marker={'color': '#B2B641'}),
+
+        go.Scatter(name='Real Ask', x=spread_data.index.values, y=spread_data['ask'],
+                   mode='lines', marker={'color': '#4785C2'}),
+
+        go.Scatter(name='Mid-Price', x=spread_data.index.values, y=spread_data['mid_price'],
+                   mode='lines', marker={'color': '#000000'})
+    ])
+
+    # Plot configuration
+    fig_real.update_layout(height=500, font_family='Oswald, sans-serif',
+                           title_text='<b>Real observed metrics<b>')
+    fig_real['layout']['title']['font'] = dict(size=19)
+    fig_real.update_yaxes(title_text='Real prices')
+    fig_real.update_xaxes(title_text='Time')
+
     # -- Return data definition -- #
-    r_data = {'spread': fig_spread, 'bid': fig_bid, 'ask': fig_ask}
+    r_data = {'spread': fig_spread, 'diff': fig_diff, 'bid': fig_bid, 'ask': fig_ask,
+              'theo': fig_theo, 'real': fig_real}
 
     return r_data
 

@@ -280,7 +280,7 @@ def roll_model_check(ob_data:dict,
         'spread_definition': Data frame with the calculations of theoretical spread, bid and ask
 
         'prob_evolution': Data frame with the probability evolution on sell and buy orders. Just a
-                          sample of 50,000 because time complexity computation
+                          sample of 20,000 because time complexity computation
 
         'auto_correlation': Auto correlation between orders (buy and sell)
 
@@ -322,14 +322,15 @@ def roll_model_check(ob_data:dict,
     # -- Data frame consolidation for theoretical and real spread -- #
     roll_df['real_spread'] = roll_df['ask'] - roll_df['bid']
     roll_df['theoretical_spread'] = [0.0, 0.0] + teo_spread # Add zeros because of time lags
+    roll_df['spread_diff'] = roll_df['real_spread'] - roll_df['theoretical_spread']
     roll_df['theoretical_bid'] = roll_df['mid_price'] - ob_teo_spread
     roll_df['theoretical_ask'] = roll_df['mid_price'] + ob_teo_spread
 
     # -- Data frame definition for probability of buy or sell -- #
-    sell_evo = [prob_evo(pt_data.side, i, "sell") for i in range(1,10001)] # 10000 scenarios
+    sell_evo = [prob_evo(pt_data.side, i, "sell") for i in range(1,20001)] # 20000 scenarios
     buy_evo = list((1-np.array(sell_evo)))
 
-    pt_data_sample = pt_data[0:10000]
+    pt_data_sample = pt_data[0:20000]
     pt_data_sample['prob_sell'] = sell_evo
     pt_data_sample['prob_buy'] = buy_evo
     pt_data_sample['timestamp'] = pd.to_datetime(pt_data_sample['timestamp'])
