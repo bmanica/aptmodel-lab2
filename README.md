@@ -11,7 +11,7 @@ Or you can manually install one by one using the name and version in the file.
 
 ## Funcionalities
 
-*Add here examples of core functionalities for the project in this repository.*
+*Bring APT and Roll Model into real world data, in order to determine their limitations on implementation to real trading strategies.*
 
 ## Author
 *Bryan Manica. Financial Engineering Student with interests in Data Science and AI driven solutions for financial modelling.*
